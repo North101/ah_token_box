@@ -1,0 +1,5 @@
+pysvg @ git+https://github.com/North101/pysvg.git@d438340defc87bfba041080fb18e9cc1baa31f8a ; python_version >= "3.12" and python_version < "4.0"
+typed-argparse @ git+https://github.com/North101/typed-argparse@e5419f33b1df161ea40e130d34731e26aea325ef ; python_version >= "3.12" and python_version < "4.0"
+typing-extensions==4.9.0 ; python_version >= "3.12" and python_version < "4.0" \
+    --hash=sha256:23478f88c37f27d76ac8aee6c905017a143b0b1b886c3c9f66bc2fd94f9f5783 \
+    --hash=sha256:af72aea155e91adfc61c3ae9e0e342dbc0cba726d6cba4b6c72c1f34e47291cd
