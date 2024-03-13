@@ -82,18 +82,18 @@ def h_side(out: bool, height: float, width: float, gap: float, max_width: float,
       path.d.h(width + tab_kerf(out, kerf)),
       path.placeholder(lambda w, h: h_center(
           segment=lambda max_width: h_tabs(out, height, width, gap, max_width, kerf),
-          h_length=max_width - w,
+          width=max_width - w,
       )),
       path.d.h(width + tab_kerf(out, kerf)),
       path.d.h(padding),
   ])
 
 
-def h_center(segment: Callable[[float], DrawSegment], h_length: float):
+def h_center(segment: Callable[[float], DrawSegment], width: float):
   return path.d([
-      path.placeholder(lambda w, h: path.d.h((h_length - w) / 2)),
-      segment(h_length),
-      path.placeholder(lambda w, h: path.d.h((h_length - w) / 2)),
+      path.placeholder(lambda w, h: path.d.h((width - w) / 2)),
+      segment(width),
+      path.placeholder(lambda w, h: path.d.h((width - w) / 2)),
   ])
 
 
@@ -225,13 +225,13 @@ class Tab():
         kerf=self.kerf,
     )
 
-  def h_side(self, out: bool, h_length: float, pad: bool, gap: float | None = None):
+  def h_side(self, out: bool, width: float, pad: bool, gap: float | None = None):
     return h_side(
         out=out,
         height=self.thickness,
         width=self.tab,
         gap=gap if gap is not None else self.tab,
-        max_width=h_length,
+        max_width=width,
         padding=self.thickness if pad else 0,
         kerf=self.kerf,
     )
@@ -252,7 +252,7 @@ class Tab():
         kerf=self.kerf,
     )
 
-  def v_tab(self, out: bool, padding: float | None = None):
+  def v_tab(self, out: bool):
     return v_tab(
         out=out,
         width=self.thickness,
@@ -270,13 +270,13 @@ class Tab():
         kerf=self.kerf,
     )
 
-  def v_side(self, out: bool, v_length: float, pad: bool, gap: float | None = None):
+  def v_side(self, out: bool, max_height: float, pad: bool, gap: float | None = None):
     return v_side(
         out=out,
         width=self.thickness,
         height=self.tab,
         gap=gap if gap is not None else self.tab,
-        max_height=v_length,
+        max_height=max_height,
         padding=self.thickness if pad else 0,
         kerf=self.kerf,
     )

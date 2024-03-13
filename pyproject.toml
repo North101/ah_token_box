@@ -1,9 +1,12 @@
 [tool.poetry]
-name = "ah_token_tube"
+name = "ah_token_box"
 version = "0.1.0"
 description = ""
 authors = ["North101"]
 license = "MIT"
+
+[tool.poetry.scripts]
+build = "ah_token_box:main"
 
 [tool.poetry.dependencies]
 python = "^3.12"

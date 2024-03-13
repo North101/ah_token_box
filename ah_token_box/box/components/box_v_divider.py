@@ -36,7 +36,7 @@ class write_svg(RegisterSVGCallable[AHTokenBox]):
             seperator=path.d.h(args.dimension.width),
             count=args.rows - 1,
         ))),
-        h_length=top_path.fill_placeholders.width,
+        width=top_path.fill_placeholders.width,
     )
     left_path = -right_path
 
