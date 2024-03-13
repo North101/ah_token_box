@@ -1,27 +1,18 @@
+import enum
 import pathlib
 from typing import Any, Type
 
-import typed_argparse as tap
-from pysvg import PresentationAttributes, svg
+from pysvg import svg
+
+from .args import SVGArgs
 
 
-class SVGArgs(tap.TypedArgs):
-  output: pathlib.Path = tap.arg(
-      default=pathlib.Path('output'),
-      help='output path',
-  )
-
-  cut = PresentationAttributes(
-      fill='none',
-      stroke='black',
-      stroke_width=0.001,
-  )
-
-  engrave = PresentationAttributes(
-      fill='black',
-      stroke='none',
-      stroke_width=0.001,
-  )
+def filename(file: str, suffix: str | enum.Enum | None = None):
+  if suffix:
+    if isinstance(suffix, enum.Enum):
+      suffix = suffix.name.lower()
+    file = f'{pathlib.Path(file).stem}_{suffix}'
+  return pathlib.Path(file).with_suffix('.svg').name
 
 
 class RegisterSVGCallable[T: SVGArgs]():
@@ -32,9 +23,19 @@ class RegisterSVGCallable[T: SVGArgs]():
 svg_list: list[RegisterSVGCallable[Any]] = []
 
 
-def register_svg[T: SVGArgs](f: RegisterSVGCallable[T] | Type[RegisterSVGCallable[T]]):
-  svg_list.append(f() if isinstance(f, Type) else f)
-  return f
+def register_svgs[T: SVGArgs](enum: Type[enum.Enum]):
+  def wrapped(f: Type[RegisterSVGCallable[T]]):
+    for item in enum:
+      register_svg(item)(f)
+    return f
+  return wrapped
+
+
+def register_svg[T: SVGArgs](*args, **kwargs):
+  def wrapped(f: Type[RegisterSVGCallable[T]]):
+    svg_list.append(f(*args, **kwargs))
+    return f
+  return wrapped
 
 
 def generate_svgs(args: SVGArgs):

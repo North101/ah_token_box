@@ -2,16 +2,14 @@ import pathlib
 
 import pysvg
 from pysvg import Element, path, svg
-from pysvg.attributes.presentation import DrawSegment
 
-from ...helper import *
-from ...shared import *
-from ..args import AHTokenBox
+from ...util import *
+from ..args import AHTokenBoxArgs
 
 
-@register_svg
-class write_svg(RegisterSVGCallable[AHTokenBox]):
-  def __call__(self, args: AHTokenBox):
+@register_svg()
+class write_svg(RegisterSVGCallable[AHTokenBoxArgs]):
+  def __call__(self, args: AHTokenBoxArgs):
     height = args.dimension.height / 2
 
     top_path = path.d(list(seperated(
@@ -63,5 +61,4 @@ class write_svg(RegisterSVGCallable[AHTokenBox]):
         children=children,
     )
 
-    filename = pathlib.Path(__file__).with_suffix('.svg').name
-    return args.output / filename, s
+    return args.output / filename(__file__), s

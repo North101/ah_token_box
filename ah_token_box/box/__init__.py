@@ -1,13 +1,7 @@
-from .. import shared
-from .args import AHTokenBox
-from .components import (
-    box_end,
-    box_face,
-    box_h_divider,
-    box_side,
-    box_v_divider,
-)
+from .. import util
+from .args import AHTokenBoxArgs
+from .components import *
 
 
-def runner(args: AHTokenBox):
-  return shared.write_svgs(shared.generate_svgs(args))
+def runner(args: AHTokenBoxArgs):
+  return util.write_svgs(util.generate_svgs(args))

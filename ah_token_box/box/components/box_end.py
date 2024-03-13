@@ -4,9 +4,8 @@ import pathlib
 import pysvg
 from pysvg import Element, path, svg
 
-from ...helper import *
-from ...shared import *
-from ..args import AHTokenBox
+from ...util import *
+from ..args import AHTokenBoxArgs
 
 
 class End(enum.Enum):
@@ -14,19 +13,20 @@ class End(enum.Enum):
   BOTTOM = enum.auto()
 
 
-class write_svg(RegisterSVGCallable[AHTokenBox]):
+@register_svgs(End)
+class write_svg(RegisterSVGCallable[AHTokenBoxArgs]):
   def __init__(self, end: End):
     self.end = end
 
-  def __call__(self, args: AHTokenBox):
+  def __call__(self, args: AHTokenBoxArgs):
     end = self.end
     helper = Tab(args.tab, args.thickness, args.kerf)
 
     length = ((args.dimension.length + helper.thickness) * args.columns) - helper.thickness
     width = ((args.dimension.width + helper.thickness) * args.rows) - helper.thickness
 
-    horizontal = helper.h_side(False, length, True)
-    vertical = helper.v_side(False, width, True)
+    horizontal = helper.h_tabs(False, length, True)
+    vertical = helper.v_tabs(False, width, True)
     top_path = horizontal
     right_path = vertical
     bottom_path = -horizontal
@@ -82,10 +82,4 @@ class write_svg(RegisterSVGCallable[AHTokenBox]):
         children=children,
     )
 
-    stem = pathlib.Path(__file__).stem
-    filename = pathlib.Path(f'{stem}_{end.name.lower()}').with_suffix('.svg').name
-    return args.output / filename, s
-
-
-for end in End:
-  register_svg(write_svg(end=end))
+    return args.output / filename(__file__, end), s

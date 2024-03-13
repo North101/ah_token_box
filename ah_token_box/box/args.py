@@ -1,9 +1,9 @@
 import typed_argparse as tap
 
-from .. import shared, types
+from .. import types, util
 
 
-class AHTokenBox(shared.SVGArgs):
+class AHTokenBoxArgs(util.SVGArgs):
   dimension: types.Dimension = tap.arg(
       help='card dimensions [length] [width] [height] (mm)',
   )

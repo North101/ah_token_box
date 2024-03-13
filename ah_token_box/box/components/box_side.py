@@ -4,9 +4,8 @@ import pathlib
 import pysvg
 from pysvg import Element, path, svg
 
-from ...helper import *
-from ...shared import *
-from ..args import AHTokenBox
+from ...util import *
+from ..args import AHTokenBoxArgs
 
 
 class Side(enum.Enum):
@@ -14,11 +13,12 @@ class Side(enum.Enum):
   BOTTOM = enum.auto()
 
 
-class write_svg(RegisterSVGCallable[AHTokenBox]):
+@register_svgs(Side)
+class write_svg(RegisterSVGCallable[AHTokenBoxArgs]):
   def __init__(self, side: Side):
     self.side = side
 
-  def __call__(self, args: AHTokenBox):
+  def __call__(self, args: AHTokenBoxArgs):
     side = self.side
     helper = Tab(args.tab, args.thickness, args.kerf)
 
@@ -26,9 +26,9 @@ class write_svg(RegisterSVGCallable[AHTokenBox]):
     width = ((args.dimension.width + helper.thickness) * args.rows) - helper.thickness
 
     horizontal = path.d([
-        helper.h_side(True, (height / 2) - args.thickness, False),
+        helper.h_tabs(True, (height / 2) - args.thickness, False),
     ])
-    vertical = helper.v_side(True, width, False)
+    vertical = helper.v_tabs(True, width, False)
     top_path = path.d([
         path.d.h(args.thickness),
         horizontal,
@@ -38,7 +38,7 @@ class write_svg(RegisterSVGCallable[AHTokenBox]):
         horizontal,
         path.d.h(args.thickness),
     ])
-    left_path = -v_side(
+    left_path = -v_tabs(
         out=False,
         width=args.thickness,
         height=args.dimension.width,
@@ -71,10 +71,4 @@ class write_svg(RegisterSVGCallable[AHTokenBox]):
         children=children,
     )
 
-    stem = pathlib.Path(__file__).stem
-    filename = pathlib.Path(f'{stem}_{side.name.lower()}').with_suffix('.svg').name
-    return args.output / filename, s
-
-
-for side in Side:
-  register_svg(write_svg(side=side))
+    return args.output / filename(__file__, side), s
