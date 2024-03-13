@@ -1,161 +1,18 @@
 import math
 from typing import Callable
 
-from pysvg import PresentationAttributes, g, path, svg, transforms
+from pysvg import PresentationAttributes, g, path, transforms
 from pysvg.attributes.presentation import DrawSegment
 
 from .types import Image
 
 
-class Helper():
-  tab: float
-  thickness: float
-  kerf: float
+def corner_radius_br(r: float, bite=False):
+  return path.d.a(r, r, 0, False, not bite, r, r)
 
-  def __init__(self, tab: float, thickness: float, kerf: float):
-    self.tab = tab
-    self.thickness = thickness
-    self.kerf = kerf
 
-  def h_tab_half(self):
-    return path.d.h(self.tab / 2)
-
-  def h_tab(self, out: bool, padding: float | None = None):
-    padding = padding if padding is not None else self.tab / 2
-    kerf = -self.kerf if out else self.kerf
-    thickness = -path.d.v(self.thickness) if out else path.d.v(self.thickness)
-    return path.d([
-        path.d.h(padding + kerf),
-        thickness,
-        path.d.h(self.tab + -kerf + -kerf),
-        -thickness,
-        path.d.h(kerf + padding),
-    ])
-
-  def h_tabs(self, out: bool, width: float, padding: float | None = None):
-    h_tab = self.h_tab(out, padding)
-    count = math.floor(width / h_tab.width)
-    return path.d([
-        h_tab
-        for _ in range(count)
-    ])
-
-  def v_tab_half(self):
-    return path.d.v(self.tab / 2)
-
-  def v_tab(self, out: bool, padding: float | None = None):
-    padding = padding if padding is not None else self.tab / 2
-    kerf = -self.kerf if out else self.kerf
-    thickness = -path.d.h(self.thickness) if out else path.d.h(self.thickness)
-    return path.d([
-        path.d.v(padding + kerf),
-        -thickness,
-        path.d.v(self.tab + -kerf + -kerf),
-        thickness,
-        path.d.v(kerf + padding),
-    ])
-
-  def v_tabs(self, out: bool, height: float, padding: float | None = None):
-    v_tab = self.v_tab(out, padding)
-    count = math.floor(height / v_tab.height)
-    return path.d([
-        v_tab
-        for _ in range(count)
-    ])
-
-  def h_slot(self):
-    kerf = self.kerf
-    thickness = path.d.v(self.thickness)
-    return path.d([
-        path.d.m((self.tab / 2) + kerf, 0),
-        thickness,
-        path.d.h(self.tab + -kerf + -kerf),
-        -thickness,
-        -path.d.h(self.tab + -kerf + -kerf),
-        path.d.m(self.tab + -kerf + -kerf, 0),
-        path.d.m(kerf + (self.tab / 2), 0),
-    ])
-
-  def h_slots(self, width: float):
-    h_slot = self.h_slot()
-    count = math.floor(width / h_slot.width)
-    return path.d([
-        h_slot
-        for _ in range(count)
-    ])
-
-  def v_slot(self):
-    kerf = self.kerf
-    thickness = path.d.h(self.thickness)
-    return path.d([
-        path.d.m(0, (self.tab / 2) + kerf),
-        path.d.v(self.tab + -kerf + -kerf),
-        -thickness,
-        -path.d.v(self.tab + -kerf + -kerf),
-        thickness,
-        path.d.m(0, self.tab + -kerf + -kerf),
-        path.d.m(0, kerf + (self.tab / 2)),
-    ])
-
-  def v_slots(self, height: float):
-    v_slot = self.v_slot()
-    count = math.floor(height / v_slot.height)
-    return path.d([
-        v_slot
-        for _ in range(count)
-    ])
-
-  def h_center(self, segment: Callable[[float], DrawSegment], h_length: float):
-    return path.d([
-        path.placeholder(lambda w, h: path.d.h((h_length - w) / 2)),
-        segment(h_length),
-        path.placeholder(lambda w, h: path.d.h((h_length - w) / 2)),
-    ])
-
-  def hm_center(self, segment: Callable[[float], DrawSegment], h_length: float):
-    return path.d([
-        path.placeholder(lambda w, h: path.d.m((h_length - w) / 2, 0)),
-        segment(h_length),
-        path.placeholder(lambda w, h: path.d.m((h_length - w) / 2, 0)),
-    ])
-
-  def v_center(self, segment: Callable[[float], DrawSegment], v_length: float):
-    return path.d([
-        path.placeholder(lambda w, h: path.d.v((v_length - h) / 2)),
-        segment(v_length),
-        path.placeholder(lambda w, h: path.d.v((v_length - h) / 2)),
-    ])
-
-  def vm_center(self, segment: Callable[[float], DrawSegment], v_length: float):
-    return path.d([
-        path.placeholder(lambda w, h: path.d.m(0, (v_length - h) / 2)),
-        segment(v_length),
-        path.placeholder(lambda w, h: path.d.m(0, (v_length - h) / 2)),
-    ])
-
-  def h_side(self, out: bool, h_length: float, pad: bool):
-    return path.d([
-        path.d.h(self.thickness if pad else 0),
-        self.h_tab_half(),
-        path.placeholder(lambda w, h: self.h_center(
-            segment=lambda h_length: self.h_tabs(out, h_length),
-            h_length=h_length - w + (self.thickness * 2 if pad else 0),
-        )),
-        self.h_tab_half(),
-        path.d.h(self.thickness if pad else 0),
-    ])
-
-  def v_side(self, out: bool, v_length: float, pad: bool):
-    return path.d([
-        path.d.v(self.thickness if pad else 0),
-        self.v_tab_half(),
-        path.placeholder(lambda w, h: self.v_center(
-            segment=lambda v_length: self.v_tabs(out, v_length),
-            v_length=v_length - h + (self.thickness * 2 if pad else 0),
-        )),
-        self.v_tab_half(),
-        path.d.v(self.thickness if pad else 0),
-    ])
+def corner_radius_tl(r: float, bite=False):
+  return path.d.a(r, r, 0, False, not bite, r, -r)
 
 
 def engrave_image(path: path.d, image: Image, engrave: PresentationAttributes):
@@ -175,3 +32,267 @@ def engrave_image(path: path.d, image: Image, engrave: PresentationAttributes):
           image.path.read_text().strip(),
       ],
   )
+
+
+def seperated(item: DrawSegment, seperator: DrawSegment, count: int):
+  if count == 0:
+    raise ValueError()
+  for _ in range(count - 1):
+    yield item
+    yield seperator
+  yield item
+
+
+def m_center(segment: Callable[[float, float], DrawSegment], width: float = 0, height: float = 0):
+  return path.d([
+      path.placeholder(lambda w, h: path.d.m((width - w) / 2, (height - h) / 2)),
+      segment(width, height),
+      path.placeholder(lambda w, h: path.d.m((width - w) / 2, (height - h) / 2)),
+  ])
+
+
+def tab_kerf(out: bool, kerf: float):
+  return -kerf if out else kerf
+
+
+def h_tab(out: bool, height: float, width: float, kerf: float):
+  height = -height if out else height
+  return path.d([
+      path.d.v(height),
+      path.d.h(width - tab_kerf(out, kerf * 2)),
+      -path.d.v(height),
+  ])
+
+
+def h_tabs(out: bool, height: float, width: float, gap: float, max_width: float, kerf: float):
+  tab = h_tab(out, height, width, kerf)
+  seperator = path.d.h(gap + tab_kerf(out, kerf * 2))
+  count = math.floor((max_width - tab.width) / (tab.width + seperator.value))
+  return path.d(list(seperated(
+      item=tab,
+      seperator=seperator,
+      count=count + 1,
+  )))
+
+
+def h_side(out: bool, height: float, width: float, gap: float, max_width: float, padding: float, kerf: float):
+  max_width = max_width + (padding * 2)
+  return path.d([
+      path.d.h(padding),
+      path.d.h(width + tab_kerf(out, kerf)),
+      path.placeholder(lambda w, h: h_center(
+          segment=lambda max_width: h_tabs(out, height, width, gap, max_width, kerf),
+          h_length=max_width - w,
+      )),
+      path.d.h(width + tab_kerf(out, kerf)),
+      path.d.h(padding),
+  ])
+
+
+def h_center(segment: Callable[[float], DrawSegment], h_length: float):
+  return path.d([
+      path.placeholder(lambda w, h: path.d.h((h_length - w) / 2)),
+      segment(h_length),
+      path.placeholder(lambda w, h: path.d.h((h_length - w) / 2)),
+  ])
+
+
+def hm_center(segment: Callable[[float], DrawSegment], width: float):
+  return m_center(
+      segment=lambda w, h: segment(w),
+      width=width,
+  )
+
+
+def h_slot(height: float, width: float, kerf: float):
+  kerf = kerf * 2
+  return path.d([
+      path.d.h(width),
+      path.d.v(height - kerf),
+      -path.d.h(width),
+      -path.d.v(height - kerf),
+      path.d.m(height - kerf, 0),
+  ])
+
+
+def h_slots(height: float, width: float, gap: float, max_width: float, kerf: float):
+  tab = h_slot(height, width, kerf)
+  seperator = path.d.m(gap + kerf * 2, 0)
+  count = math.floor((max_width - tab.width) / (tab.width + seperator.x))
+  return path.d(list(seperated(
+      item=tab,
+      seperator=seperator,
+      count=count + 1,
+  )))
+
+
+def v_tab(out: bool, width: float, height: float, kerf: float):
+  width = -width if out else width
+  return path.d([
+      -path.d.h(width),
+      path.d.v(height - tab_kerf(out, kerf * 2)),
+      path.d.h(width),
+  ])
+
+
+def v_tabs(out: bool, width: float, height: float, gap: float, max_height: float, kerf: float):
+  tab = v_tab(out, width, height, kerf)
+  seperator = path.d.v(gap + tab_kerf(out, kerf * 2))
+  count = math.floor((max_height - tab.height) / (tab.height + seperator.value))
+  return path.d(list(seperated(
+      item=tab,
+      seperator=seperator,
+      count=count + 1,
+  )))
+
+
+def v_side(out: bool, width: float, height: float, gap: float, max_height: float, padding: float, kerf: float):
+  max_height = max_height + (padding * 2)
+  return path.d([
+      path.d.v(padding),
+      path.d.v(height + tab_kerf(out, kerf)),
+      path.placeholder(lambda w, h: v_center(
+          segment=lambda max_height: v_tabs(out, width, height, gap, max_height, kerf),
+          height=max_height - h,
+      )),
+      path.d.v(height + tab_kerf(out, kerf)),
+      path.d.v(padding),
+  ])
+
+
+def v_slot(width: float, height: float, kerf: float):
+  kerf = kerf * 2
+  return path.d([
+      path.d.v(height),
+      path.d.h(width - kerf),
+      -path.d.v(height),
+      -path.d.h(width - kerf),
+      path.d.m(0, width - kerf),
+  ])
+
+
+def v_slots(width: float, height: float, gap: float, max_height: float, kerf: float):
+  tab = v_slot(width, height, kerf)
+  seperator = path.d.m(0, gap + kerf * 2)
+  count = math.floor((max_height - tab.height) / (tab.height + seperator.y))
+  return path.d(list(seperated(
+      item=tab,
+      seperator=seperator,
+      count=count + 1,
+  )))
+
+
+def v_center(segment: Callable[[float], DrawSegment], height: float):
+  return path.d([
+      path.placeholder(lambda w, h: path.d.v((height - h) / 2)),
+      segment(height),
+      path.placeholder(lambda w, h: path.d.v((height - h) / 2)),
+  ])
+
+
+def vm_center(segment: Callable[[float], DrawSegment], height: float):
+  return m_center(
+      lambda w, h: segment(h),
+      height=height
+  )
+
+
+class Tab():
+  tab: float
+  thickness: float
+  kerf: float
+
+  def __init__(self, tab: float, thickness: float, kerf: float):
+    self.tab = tab
+    self.thickness = thickness
+    self.kerf = kerf
+
+  def h_tab(self, out: bool):
+    return h_tab(
+        out=out,
+        height=self.thickness,
+        width=self.tab,
+        kerf=self.kerf,
+    )
+
+  def h_tabs(self, out: bool, width: float, gap: float | None = None):
+    return h_tabs(
+        out=out,
+        height=self.thickness,
+        width=self.tab,
+        gap=gap if gap is not None else self.tab,
+        max_width=width,
+        kerf=self.kerf,
+    )
+
+  def h_side(self, out: bool, h_length: float, pad: bool, gap: float | None = None):
+    return h_side(
+        out=out,
+        height=self.thickness,
+        width=self.tab,
+        gap=gap if gap is not None else self.tab,
+        max_width=h_length,
+        padding=self.thickness if pad else 0,
+        kerf=self.kerf,
+    )
+
+  def h_slot(self):
+    return h_slot(
+        height=self.thickness,
+        width=self.tab,
+        kerf=self.kerf,
+    )
+
+  def h_slots(self, width: float, gap: float | None = None):
+    return h_slots(
+        height=self.thickness,
+        width=self.tab,
+        gap=gap if gap is not None else self.tab,
+        max_width=width,
+        kerf=self.kerf,
+    )
+
+  def v_tab(self, out: bool, padding: float | None = None):
+    return v_tab(
+        out=out,
+        width=self.thickness,
+        height=self.tab,
+        kerf=self.kerf,
+    )
+
+  def v_tabs(self, out: bool, height: float, gap: float | None = None):
+    return v_tabs(
+        out=out,
+        width=self.thickness,
+        height=self.tab,
+        gap=gap if gap is not None else self.tab,
+        max_height=height,
+        kerf=self.kerf,
+    )
+
+  def v_side(self, out: bool, v_length: float, pad: bool, gap: float | None = None):
+    return v_side(
+        out=out,
+        width=self.thickness,
+        height=self.tab,
+        gap=gap if gap is not None else self.tab,
+        max_height=v_length,
+        padding=self.thickness if pad else 0,
+        kerf=self.kerf,
+    )
+
+  def v_slot(self):
+    return v_slot(
+        width=self.thickness,
+        height=self.tab,
+        kerf=self.kerf,
+    )
+
+  def v_slots(self, height: float, gap: float | None = None):
+    return v_slots(
+        width=self.thickness,
+        height=self.tab,
+        gap=gap if gap is not None else self.tab,
+        max_height=height,
+        kerf=self.kerf,
+    )

@@ -41,6 +41,11 @@ class Dimension(NamedTuple):
   height: PositiveFloat
 
 
+class Size(NamedTuple):
+  width: PositiveFloat
+  height: PositiveFloat
+
+
 class Image(NamedTuple):
   path: SVGFileExists
   width: PositiveFloat

@@ -1,12 +1,9 @@
 import typed_argparse as tap
 
-from ah_token_tube import types
-from ah_token_tube.shared import *
-
-from . import const
+from .. import shared, types
 
 
-class AHTokenTube(SVGArgs):
+class AHTokenBox(shared.SVGArgs):
   dimension: types.Dimension = tap.arg(
       help='card dimensions [length] [width] [height] (mm)',
   )
@@ -20,19 +17,23 @@ class AHTokenTube(SVGArgs):
   )
   tab: float = tap.arg(
       type=types.PositiveFloat,
-      default=const.TAB,
+      default=4.0,
       help='tab size (mm)',
   )
-  count: int = tap.arg(
+  rows: int = tap.arg(
       help='tab size (mm)',
   )
+  columns: int = tap.arg(
+      help='tab size (mm)',
+  )
+  magnet: types.Size = tap.arg()
 
-  face_image: Image | None = tap.arg(
+  face_image: types.Image | None = tap.arg(
       default=None,
   )
-  front_image: Image | None = tap.arg(
+  front_image: types.Image | None = tap.arg(
       default=None,
   )
-  back_image: Image | None = tap.arg(
+  back_image: types.Image | None = tap.arg(
       default=None,
   )

@@ -1,11 +1,11 @@
 import typed_argparse as tap
 
-from . import AHTokenTube, runner
+from . import box
 from .shared import *
 
 if __name__ == '__main__':
   tap.Parser(
-      AHTokenTube,
+      box.AHTokenBox,
   ).bind(
-      runner,
+      box.runner,
   ).run()

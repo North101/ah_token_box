@@ -2,9 +2,7 @@ import pathlib
 from typing import Any, Type
 
 import typed_argparse as tap
-from pysvg import PresentationAttributes, g, path, svg, transforms
-
-from .types import Image
+from pysvg import PresentationAttributes, svg
 
 
 class SVGArgs(tap.TypedArgs):
