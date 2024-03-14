@@ -1,10 +1,9 @@
 import enum
-import pathlib
 
 import pysvg
-from pysvg import Element, path, svg
+import pysvg_util as util
+from pysvg import Element, g, path, svg, transforms
 
-from ...util import *
 from ..args import AHTokenBoxArgs
 
 
@@ -13,14 +12,14 @@ class End(enum.Enum):
   BOTTOM = enum.auto()
 
 
-@register_svgs(End)
-class write_svg(RegisterSVGCallable[AHTokenBoxArgs]):
+@util.register_svgs(End)
+class write_svg(util.RegisterSVGCallable[AHTokenBoxArgs]):
   def __init__(self, end: End):
     self.end = end
 
   def __call__(self, args: AHTokenBoxArgs):
     end = self.end
-    helper = Tab(args.tab, args.thickness, args.kerf)
+    helper = util.Tab(args.tab, args.thickness, args.kerf)
 
     length = ((args.dimension.length + helper.thickness) * args.columns) - helper.thickness
     width = ((args.dimension.width + helper.thickness) * args.rows) - helper.thickness
@@ -46,7 +45,7 @@ class write_svg(RegisterSVGCallable[AHTokenBoxArgs]):
         ) | args.cut | path.attrs(fill='red')),
     ]
 
-    slots = path.d(list(seperated(
+    slots = path.d(list(util.seperated(
         item=path.d([
             path.d.v(args.thickness + -args.kerf + -args.kerf),
             -path.d.h(args.thickness),
@@ -66,7 +65,7 @@ class write_svg(RegisterSVGCallable[AHTokenBoxArgs]):
               children=[
                   path(attrs=path.attrs(
                       transform=transforms.translate(x=i * (args.dimension.length + helper.thickness)),
-                      d=vm_center(lambda length: slots, height=width),
+                      d=util.vm_center(lambda length: slots, height=width),
                   ))
                   for i in range(1, args.columns)
               ],
@@ -82,4 +81,4 @@ class write_svg(RegisterSVGCallable[AHTokenBoxArgs]):
         children=children,
     )
 
-    return args.output / filename(__file__, end), s
+    return args.output / util.filename(__file__, end), s

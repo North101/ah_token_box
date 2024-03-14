@@ -16,6 +16,25 @@ reference = "HEAD"
 resolved_reference = "68c0522b055fe667e66940cfa694d15634488a0c"
 
 [[package]]
+name = "pysvg-util"
+version = "0.1"
+description = ""
+optional = false
+python-versions = "^3.12"
+files = []
+develop = false
+
+[package.dependencies]
+pysvg = {git = "https://github.com/North101/pysvg.git"}
+typed-argparse = {git = "https://github.com/North101/typed-argparse"}
+
+[package.source]
+type = "git"
+url = "https://github.com/North101/pysvg-util.git"
+reference = "HEAD"
+resolved_reference = "0434625abaebe3fb5b02a38c7b9f69afa6c3257b"
+
+[[package]]
 name = "typed-argparse"
 version = "0.3.1"
 description = "Write type-safe and elegant CLIs with a clear separation of concerns."
@@ -47,4 +66,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "d4c0994b3a1f6d76e10e62473b49b33eb23de1225a6044de387f408921f4fc6f"
+content-hash = "ba17bd8618e4ae7e429bf02e633f5483370cdcc184c630d2560c0125b630b387"

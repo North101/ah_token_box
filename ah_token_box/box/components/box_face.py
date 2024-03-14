@@ -1,10 +1,9 @@
 import enum
-import pathlib
 
 import pysvg
+import pysvg_util as util
 from pysvg import Element, path, svg
 
-from ...util import *
 from ..args import AHTokenBoxArgs
 
 
@@ -13,14 +12,14 @@ class Face(enum.Enum):
   BOTTOM = enum.auto()
 
 
-@register_svgs(Face)
-class write_svg(RegisterSVGCallable[AHTokenBoxArgs]):
+@util.register_svgs(Face)
+class write_svg(util.RegisterSVGCallable[AHTokenBoxArgs]):
   def __init__(self, face: Face):
     self.face = face
 
   def __call__(self, args: AHTokenBoxArgs):
     face = self.face
-    helper = Tab(args.tab, args.thickness, args.kerf)
+    helper = util.Tab(args.tab, args.thickness, args.kerf)
 
     length = ((args.dimension.length + helper.thickness) * args.columns) - helper.thickness
     height = args.dimension.height
@@ -30,8 +29,8 @@ class write_svg(RegisterSVGCallable[AHTokenBoxArgs]):
     top_path = path.d([
         path.d.h(args.thickness),
         path.d.v(args.thickness if face is Face.BOTTOM else -args.thickness),
-        *list(seperated(
-            item=h_center(lambda _: h_tab(
+        *list(util.seperated(
+            item=util.h_center(lambda _: util.h_tab(
                 out=False,
                 height=args.magnet.height,
                 width=args.magnet.width,
@@ -69,7 +68,7 @@ class write_svg(RegisterSVGCallable[AHTokenBoxArgs]):
 
     image = args.face_image
     if image:
-      children.append(engrave_image(
+      children.append(util.engrave_image(
           path=d,
           image=image,
           engrave=args.engrave,
@@ -84,4 +83,4 @@ class write_svg(RegisterSVGCallable[AHTokenBoxArgs]):
         children=children,
     )
 
-    return args.output / filename(__file__, face), s
+    return args.output / util.filename(__file__, face), s

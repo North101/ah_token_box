@@ -1,18 +1,16 @@
-import pathlib
-
 import pysvg
+import pysvg_util as util
 from pysvg import Element, path, svg
 
-from ...util import *
 from ..args import AHTokenBoxArgs
 
 
-@register_svg()
-class write_svg(RegisterSVGCallable[AHTokenBoxArgs]):
+@util.register_svg()
+class write_svg(util.RegisterSVGCallable[AHTokenBoxArgs]):
   def __call__(self, args: AHTokenBoxArgs):
     height = args.dimension.height / 2
 
-    top_path = path.d(list(seperated(
+    top_path = path.d(list(util.seperated(
         item=path.d.h(args.dimension.width),
         seperator=path.d([
             path.d.v(height / 2),
@@ -22,8 +20,8 @@ class write_svg(RegisterSVGCallable[AHTokenBoxArgs]):
         count=args.rows,
     )))
     right_path = path.d.v(height)
-    bottom_path = -h_center(
-        lambda _: path.d(list(seperated(
+    bottom_path = -util.h_center(
+        lambda _: path.d(list(util.seperated(
             item=path.d([
                 path.d.h(args.kerf),
                 -path.d.v(args.thickness),
@@ -61,4 +59,4 @@ class write_svg(RegisterSVGCallable[AHTokenBoxArgs]):
         children=children,
     )
 
-    return args.output / filename(__file__), s
+    return args.output / util.filename(__file__), s

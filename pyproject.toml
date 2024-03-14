@@ -11,8 +11,8 @@ build = "ah_token_box:main"
 [tool.poetry.dependencies]
 python = "^3.12"
 pysvg = {git = "https://github.com/North101/pysvg.git"}
+pysvg-util = {git = "https://github.com/North101/pysvg-util.git"}
 typed-argparse = {git = "https://github.com/North101/typed-argparse"}
-
 
 [build-system]
 requires = ["poetry-core"]

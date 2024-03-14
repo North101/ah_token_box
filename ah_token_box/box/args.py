@@ -1,9 +1,8 @@
 import typed_argparse as tap
+from pysvg_util import args, types
 
-from .. import types, util
 
-
-class AHTokenBoxArgs(util.SVGArgs):
+class AHTokenBoxArgs(args.SVGArgs):
   dimension: types.Dimension = tap.arg(
       help='card dimensions [length] [width] [height] (mm)',
   )

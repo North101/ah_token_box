@@ -1,4 +1,5 @@
-from .. import util
+import pysvg_util as util
+
 from .args import AHTokenBoxArgs
 from .components import *
 
