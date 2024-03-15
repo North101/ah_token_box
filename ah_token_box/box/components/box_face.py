@@ -12,13 +12,10 @@ class Face(enum.Enum):
   BOTTOM = enum.auto()
 
 
-@util.register_svgs(Face)
-class write_svg(util.RegisterSVGCallable[AHTokenBoxArgs]):
-  def __init__(self, face: Face):
-    self.face = face
-
+@util.register_svg_variants(Face)
+class write_svg(util.VariantSVGFile[AHTokenBoxArgs, Face]):
   def __call__(self, args: AHTokenBoxArgs):
-    face = self.face
+    face = self.variant
     helper = util.Tab(args.tab, args.thickness, args.kerf)
 
     length = ((args.dimension.length + helper.thickness) * args.columns) - helper.thickness
@@ -29,16 +26,15 @@ class write_svg(util.RegisterSVGCallable[AHTokenBoxArgs]):
     top_path = path.d([
         path.d.h(args.thickness),
         path.d.v(args.thickness if face is Face.BOTTOM else -args.thickness),
-        *list(util.seperated(
-            item=util.h_center(lambda _: util.h_tab(
+        *util.seperated_by(
+            items=[util.h_center(lambda _: util.h_tab(
                 out=False,
-                height=args.magnet.height,
-                width=args.magnet.width,
+                thickness=args.magnet.height,
+                tab=args.magnet.width,
                 kerf=args.kerf,
-            ), args.dimension.length),
+            ), args.dimension.length)] * args.columns,
             seperator=path.d.h(args.thickness),
-            count=args.columns,
-        )),
+        ),
         -path.d.v(args.thickness if face is Face.BOTTOM else -args.thickness),
         path.d.h(args.thickness),
     ])

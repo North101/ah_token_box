@@ -12,8 +12,8 @@ class Side(enum.Enum):
   BOTTOM = enum.auto()
 
 
-@util.register_svgs(Side)
-class write_svg(util.RegisterSVGCallable[AHTokenBoxArgs]):
+@util.register_svg_variants(Side)
+class write_svg(util.VariantSVGFile[AHTokenBoxArgs, Side]):
   def __init__(self, side: Side):
     self.side = side
 
@@ -22,7 +22,7 @@ class write_svg(util.RegisterSVGCallable[AHTokenBoxArgs]):
     helper = util.Tab(args.tab, args.thickness, args.kerf)
 
     height = args.dimension.height
-    width = ((args.dimension.width + helper.thickness) * args.rows) - helper.thickness
+    width = args.dimension.width * args.rows
 
     horizontal = path.d([
         helper.h_tabs(True, (height / 2) - args.thickness, False),
@@ -37,15 +37,7 @@ class write_svg(util.RegisterSVGCallable[AHTokenBoxArgs]):
         horizontal,
         path.d.h(args.thickness),
     ])
-    left_path = -util.v_tabs(
-        out=False,
-        width=height / 4,
-        height=args.thickness,
-        gap=args.dimension.width,
-        max_height=width,
-        padding=0,
-        kerf=args.kerf * 3,
-    ) if side is Side.BOTTOM else -path.d.v(vertical.fill_placeholders.height)
+    left_path = -path.d.v(vertical.fill_placeholders.height)
 
     d = path.d([
         path.d.m(0, helper.thickness),

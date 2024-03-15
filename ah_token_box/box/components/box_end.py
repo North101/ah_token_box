@@ -12,17 +12,14 @@ class End(enum.Enum):
   BOTTOM = enum.auto()
 
 
-@util.register_svgs(End)
-class write_svg(util.RegisterSVGCallable[AHTokenBoxArgs]):
-  def __init__(self, end: End):
-    self.end = end
-
+@util.register_svg_variants(End)
+class write_svg(util.VariantSVGFile[AHTokenBoxArgs, End]):
   def __call__(self, args: AHTokenBoxArgs):
-    end = self.end
+    end = self.variant
     helper = util.Tab(args.tab, args.thickness, args.kerf)
 
     length = ((args.dimension.length + helper.thickness) * args.columns) - helper.thickness
-    width = ((args.dimension.width + helper.thickness) * args.rows) - helper.thickness
+    width = args.dimension.width * args.rows
 
     horizontal = helper.h_tabs(False, length, True)
     vertical = helper.v_tabs(False, width, True)
@@ -45,28 +42,25 @@ class write_svg(util.RegisterSVGCallable[AHTokenBoxArgs]):
         ) | args.cut | path.attrs(fill='red')),
     ]
 
-    slots = path.d(list(util.seperated(
-        item=path.d([
-            path.d.v(args.thickness + -args.kerf + -args.kerf),
-            -path.d.h(args.thickness),
-            -path.d.v(args.thickness + -args.kerf + -args.kerf),
-            path.d.h(args.thickness),
-            path.d.m(0, args.thickness + -args.kerf + -args.kerf),
-        ]),
-        seperator=path.d.m(0, args.dimension.width),
-        count=args.rows - 1,
-    )))
+    slots = util.v_slots(
+        thickness=args.thickness,
+        slot=args.tab,
+        gap=args.dimension.width,
+        max_height=width,
+        padding=args.thickness,
+        kerf=args.kerf,
+    )
     if end is End.BOTTOM:
       children += [
           g(
               attrs=g.attrs(
-                  transform=transforms.translate(x=args.thickness, y=args.thickness),
+                  transform=transforms.translate(0, y=args.thickness),
               ),
               children=[
                   path(attrs=path.attrs(
                       transform=transforms.translate(x=i * (args.dimension.length + helper.thickness)),
                       d=util.vm_center(lambda length: slots, height=width),
-                  ))
+                  ) | args.cut)
                   for i in range(1, args.columns)
               ],
           )
