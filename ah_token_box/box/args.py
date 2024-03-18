@@ -20,10 +20,10 @@ class AHTokenBoxArgs(args.SVGArgs):
       help='tab size (mm)',
   )
   rows: int = tap.arg(
-      help='tab size (mm)',
+      help='rows',
   )
   columns: int = tap.arg(
-      help='tab size (mm)',
+      help='columns',
   )
   magnet: types.Size = tap.arg()
 

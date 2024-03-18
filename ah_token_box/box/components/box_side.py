@@ -19,15 +19,13 @@ class write_svg(util.VariantSVGFile[AHTokenBoxArgs, Side]):
 
   def __call__(self, args: AHTokenBoxArgs):
     side = self.side
-    helper = util.Tab(args.tab, args.thickness, args.kerf)
-
     height = args.dimension.height
     width = args.dimension.width * args.rows
 
     horizontal = path.d([
-        helper.h_tabs(True, (height / 2) - args.thickness, False),
+        util.Tab(args.tab / 2, args.thickness, args.kerf).h_tabs(True, (height / 2) - args.thickness, False),
     ])
-    vertical = helper.v_tabs(True, width, False)
+    vertical = util.Tab(args.tab, args.thickness, args.kerf).v_tabs(True, width, False)
     top_path = path.d([
         path.d.h(args.thickness),
         horizontal,
@@ -37,10 +35,17 @@ class write_svg(util.VariantSVGFile[AHTokenBoxArgs, Side]):
         horizontal,
         path.d.h(args.thickness),
     ])
-    left_path = -path.d.v(vertical.fill_placeholders.height)
+    left_path = -path.d([
+        util.v_center(lambda _: util.v_tab(
+            out=False,
+            thickness=args.magnet.height,
+            tab=args.magnet.width,
+            kerf=args.kerf,
+        ), width),
+    ])
 
     d = path.d([
-        path.d.m(0, helper.thickness),
+        path.d.m(0, args.thickness),
         top_path,
         right_path,
         bottom_path,
