@@ -41,7 +41,7 @@ class write_svg(util.VariantSVGFile[AHTokenBoxArgs, Face]):
     ])
 
     d = path.d([
-        path.d.m(0, 0 if face is Face.BOTTOM else args.thickness),
+        path.d.m(0, 0),
         top_path,
         right_path,
         bottom_path,
