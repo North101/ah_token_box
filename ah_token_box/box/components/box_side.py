@@ -55,7 +55,7 @@ class write_svg(util.VariantSVGFile[AHTokenBoxArgs, Side]):
     children: list[Element | str] = [
         path(attrs=path.attrs(
             d=d,
-        ) | args.cut | path.attrs(fill='red')),
+        ) | args.cut),
     ]
 
     s = svg(

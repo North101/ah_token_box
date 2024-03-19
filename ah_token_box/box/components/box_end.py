@@ -39,7 +39,7 @@ class write_svg(util.VariantSVGFile[AHTokenBoxArgs, End]):
     children: list[Element | str] = [
         path(attrs=path.attrs(
             d=d,
-        ) | args.cut | path.attrs(fill='red')),
+        ) | args.cut),
     ]
 
     slots = util.v_slots(
@@ -67,11 +67,30 @@ class write_svg(util.VariantSVGFile[AHTokenBoxArgs, End]):
       ]
 
     if self.variant is End.TOP and args.top_image:
-      children.append(util.engrave_image(
-          path=d,
-          image=args.top_image,
-          engrave=args.engrave,
-      ))
+      if len(args.top_image) == 1:
+        children.append(util.engrave_image(
+            parent=d,
+            image=args.top_image[0],
+            engrave=args.engrave,
+        ))
+      elif len(args.top_image) == args.columns:
+        children += [
+            g(attrs=g.attrs(
+                transform=transforms.translate(
+                    x=(args.dimension.length + args.thickness) * i,
+                    y=0,
+                ),
+            ), children=[
+                util.engrave_image(
+                    parent=(args.dimension.length, d.height),
+                    image=args.top_image[i],
+                    engrave=args.engrave,
+                ),
+            ])
+            for i in range(args.columns)
+        ]
+      else:
+        raise ValueError()
 
     s = svg(
         attrs=svg.attrs(
