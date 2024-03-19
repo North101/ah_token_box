@@ -27,12 +27,6 @@ class AHTokenBoxArgs(args.SVGArgs):
   )
   magnet: types.Size = tap.arg()
 
-  face_image: types.Image | None = tap.arg(
-      default=None,
-  )
-  front_image: types.Image | None = tap.arg(
-      default=None,
-  )
-  back_image: types.Image | None = tap.arg(
+  top_image: types.Image | None = tap.arg(
       default=None,
   )

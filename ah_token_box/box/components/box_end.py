@@ -66,10 +66,10 @@ class write_svg(util.VariantSVGFile[AHTokenBoxArgs, End]):
           )
       ]
 
-    if self.variant is End.TOP and args.face_image:
+    if self.variant is End.TOP and args.top_image:
       children.append(util.engrave_image(
           path=d,
-          image=args.face_image,
+          image=args.top_image,
           engrave=args.engrave,
       ))
 
