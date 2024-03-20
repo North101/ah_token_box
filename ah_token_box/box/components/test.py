@@ -8,27 +8,28 @@ from ..args import AHTokenBoxArgs
 @util.register_svg()
 class write_svg(util.SVGFile[AHTokenBoxArgs]):
   def __call__(self, args: AHTokenBoxArgs):
-    height = args.dimension.height / 2
-    width = args.dimension.width * args.rows
-
-    top_path = path.d.h(width)
-    right_path = path.d.v(height)
-    bottom_path = -util.h_tabs(
-        out=True,
-        thickness=args.thickness,
-        tab=args.tab,
-        gap=args.dimension.width,
-        max_width=width,
-        kerf=args.kerf,
-    )
-    left_path = -right_path
-
     d = path.d([
         path.d.m(0, 0),
-        top_path,
-        right_path,
-        bottom_path,
-        left_path,
+        util.h_center(
+            segment=lambda _: util.h_tab(
+                out=False,
+                thickness=args.thickness,
+                tab=args.thickness,
+                kerf=args.kerf
+            ),
+            width=10,
+        ),
+        util.v_center(
+            segment=lambda _: util.v_tab(
+                out=False,
+                thickness=args.thickness,
+                tab=args.thickness,
+                kerf=args.kerf,
+            ),
+            height=15,
+        ),
+        -path.d.h(10),
+        -path.d.v(15),
     ])
 
     children: list[Element | str] = [

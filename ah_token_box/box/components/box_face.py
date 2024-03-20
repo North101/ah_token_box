@@ -63,4 +63,4 @@ class write_svg(util.VariantSVGFile[AHTokenBoxArgs, Face]):
         children=children,
     )
 
-    return args.output / util.filename(__file__, face), s
+    return util.filename(__file__, face), s

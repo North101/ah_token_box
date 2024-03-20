@@ -32,7 +32,7 @@ typed-argparse = {git = "https://github.com/North101/typed-argparse"}
 type = "git"
 url = "https://github.com/North101/pysvg-util.git"
 reference = "HEAD"
-resolved_reference = "8eefa7d6efc6e7c0ba41858bf92207b90ad082f3"
+resolved_reference = "e174ab9382c7ef83e09fc7c448ff786be252b44b"
 
 [[package]]
 name = "typed-argparse"
